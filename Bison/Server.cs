@@ -20,7 +20,14 @@ class Server
         listener.Prefixes.Add(uri);
         listener.Start();
         Console.WriteLine($"Server started at {uri}");
+        await Listen(listener);
 
+        // In case I want to shut down the server correctly I need to use a custom Stop method (like in the article).
+        // Task.Run(() => Listen(listener).ConfigureAwait(false));
+    }
+
+    private static async Task Listen(HttpListener listener)
+    {
         while (true)
         {
             HttpListenerContext context = await listener.GetContextAsync();
@@ -28,7 +35,11 @@ class Server
             {
                 HttpListenerWebSocketContext wsContext = await context.AcceptWebSocketAsync(null);
                 Console.WriteLine("WebSocket Connection Established");
-                await HandleConnection(wsContext.WebSocket);
+                //TODO remove _ = or test if I even need it
+                _ = Task.Run(() => HandleConnection(wsContext.WebSocket).ConfigureAwait(false));
+                
+                //This is why I couldn't get multiple clients at the same time
+                //await HandleConnection(wsContext.WebSocket);
             }
             else
             {
@@ -60,7 +71,7 @@ class Server
                 {
                     string response = $"Server: {receivedMessage}";
                     byte[] responseBytes = Encoding.UTF8.GetBytes(response);
-                    await webSocket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
+                   // await webSocket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
                     Console.WriteLine($"Sent: {response}");
 
                 }

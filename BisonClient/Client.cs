@@ -22,10 +22,10 @@ class Client
             {
                 await webSocket.ConnectAsync(new Uri(uri), CancellationToken.None); 
                 Console.WriteLine($"Connected to {uri}");
-                Task receiveTask = ReceiveMessages(webSocket);
 
                 while (webSocket.State == WebSocketState.Open)
                 {
+                    // Send a message to a server
                     string message = Console.ReadLine();
                     if (message == "exit")
                     {
@@ -33,6 +33,9 @@ class Client
                     }
                     byte[] messageBytes = Encoding.UTF8.GetBytes(message);
                     await webSocket.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, true, CancellationToken.None);
+
+                    // Receive message from a server
+                    Task receiveTask = ReceiveMessages(webSocket);
                 }
                 await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Client closing", CancellationToken.None);
             }

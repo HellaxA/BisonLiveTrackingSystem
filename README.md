@@ -1,16 +1,7 @@
 # Prerequisites
 - .NET SDK 9.0.102
 
-
-
-
-
-
-
-
-
-
-## couldn't find system.net.quic - libmsquic:
+## Not using because I couldn't find system.net.quic - libmsquic:
 - dotnet add package ENet-CSharp
 
 - requires microsoft package mgr:
@@ -21,3 +12,6 @@
     - sudo apt-get update
 - sudo apt install libmsquic
 - dotnet add package System.Net.Quic 
+
+# Resources
+Multi client web-socket server - https://mcguirev10.com/2019/01/15/simple-multi-client-websocket-server.html
