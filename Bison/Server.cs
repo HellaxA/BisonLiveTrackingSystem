@@ -4,7 +4,8 @@ using System.Net;
 using System.Net.WebSockets;
 
 
-
+//TODO 1 the server dies if client closes connection unexpectedly
+//TODO 2 the server puts a 2 client in the queue, can't establish multiple connections 
 class Server
 {
     static async Task Main(string[] args)
@@ -42,24 +43,31 @@ class Server
         byte[] buffer = new byte[1024];
         while (webSocket.State == WebSocketState.Open)
         {
-            WebSocketReceiveResult result = await webSocket.ReceiveAsync(
-                new ArraySegment<byte>(buffer), CancellationToken.None);
-
-            string receivedMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);                
-            Console.WriteLine($"Received: {receivedMessage}");
-
-            if (result.MessageType == WebSocketMessageType.Close)
+            try
             {
-                await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);    
-                Console.WriteLine("WebSocket Connection Closed");
+                WebSocketReceiveResult result = await webSocket.ReceiveAsync(
+                    new ArraySegment<byte>(buffer), CancellationToken.None);
+
+                string receivedMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                Console.WriteLine($"Received: {receivedMessage}");
+
+                if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", CancellationToken.None);
+                    Console.WriteLine("WebSocket Connection Closed");
+                }
+                else
+                {
+                    string response = $"Server: {receivedMessage}";
+                    byte[] responseBytes = Encoding.UTF8.GetBytes(response);
+                    await webSocket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
+                    Console.WriteLine($"Sent: {response}");
+
+                }
             }
-            else 
+            catch (WebSocketException ex)
             {
-                string response = $"server: {receivedMessage}";
-                byte[] responseBytes = Encoding.UTF8.GetBytes(response);
-                await webSocket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-                Console.WriteLine($"Sent: {response}");
-
+                Console.WriteLine($"Remote client must have closed the connection unexpectedly: {ex}");
             }
         }
     }
