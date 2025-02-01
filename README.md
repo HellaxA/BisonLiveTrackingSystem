@@ -1,4 +1,4 @@
-### Prerequisites
+# Prerequisites
 - .NET SDK 9.0.102
 
 
@@ -10,7 +10,7 @@
 
 
 
-# couldn't find system.net.quic - libmsquic:
+## couldn't find system.net.quic - libmsquic:
 - dotnet add package ENet-CSharp
 
 - requires microsoft package mgr:
