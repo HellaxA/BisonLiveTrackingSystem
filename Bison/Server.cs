@@ -3,9 +3,6 @@ using System.Text;
 using System.Net;
 using System.Net.WebSockets;
 
-
-//TODO 1 the server dies if client closes connection unexpectedly
-//TODO 2 the server puts a 2 client in the queue, can't establish multiple connections 
 class Server
 {
     static async Task Main(string[] args)
