@@ -48,6 +48,7 @@ class Server
 
     private static async Task HandleConnection(WebSocket webSocket)
     {
+        //TODO check what happens if I send a message more than 1024 bytes.
         byte[] buffer = new byte[1024];
         while (webSocket.State == WebSocketState.Open)
         {
