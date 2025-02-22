@@ -2,6 +2,7 @@
 using System.Text;
 using System.Net;
 using System.Net.WebSockets;
+using System.Diagnostics;
 
 class Server
 {
@@ -50,6 +51,10 @@ class Server
     {
         //TODO check what happens if I send a message more than 1024 bytes.
         byte[] buffer = new byte[1024];
+
+        // Stopwatch to measure how much time server spends to handle the messages.
+        // Stopwatch stopwatch = Stopwatch.StartNew();
+
         while (webSocket.State == WebSocketState.Open)
         {
             try
@@ -58,7 +63,7 @@ class Server
                     new ArraySegment<byte>(buffer), CancellationToken.None);
 
                 string receivedMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                Console.WriteLine($"Received: {receivedMessage}");
+                // Console.WriteLine($"Received: {receivedMessage}");
 
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
@@ -70,7 +75,7 @@ class Server
                     string response = $"Server: {receivedMessage}";
                     byte[] responseBytes = Encoding.UTF8.GetBytes(response);
                    // await webSocket.SendAsync(new ArraySegment<byte>(responseBytes), WebSocketMessageType.Text, true, CancellationToken.None);
-                    Console.WriteLine($"Sent: {response}");
+                   // Console.WriteLine($"Sent: {response}");
 
                 }
             }
@@ -79,5 +84,8 @@ class Server
                 Console.WriteLine($"Remote client must have closed the connection unexpectedly: {ex}");
             }
         }
+        
+        // stopwatch.Stop();
+        // Console.WriteLine("Time elapsed: " + stopwatch.ElapsedMilliseconds);
     }
 }
