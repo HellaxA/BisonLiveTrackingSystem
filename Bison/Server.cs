@@ -17,6 +17,7 @@ class Server
         HttpListener listener = new();
         listener.Prefixes.Add(uri);
         listener.Start();
+        listener.GetType();
         Console.WriteLine($"Server started at {uri}");
         await Listen(listener);
 
@@ -53,6 +54,7 @@ class Server
         byte[] buffer = new byte[1024];
 
         // Stopwatch to measure how much time server spends to handle the messages.
+        // await Task.Delay(5000);
         // Stopwatch stopwatch = Stopwatch.StartNew();
 
         while (webSocket.State == WebSocketState.Open)
